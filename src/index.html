@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>StoryApp</title>
+
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="apple-touch-icon" href="favicon.png" />
+    <link rel="manifest" href="app.webmanifest" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    />
+
+    <!-- Font Awesome 5.15.4 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <a href="#main-content" id="skip-link" class="skip-link">Lewati ke konten utama</a>
+
+    <header>
+      <div class="header-content container">
+        <div class="brand-name">
+          <span class="brand-name__text">StoryApp</span>
+        </div>
+        
+        <nav id="navigation-drawer" class="navigation-drawer">
+          <ul id="navlist-main" class="navigation-drawer__navlist-main"></ul>
+          <ul id="navlist" class="navigation-drawer__navlist"></ul>
+        </nav>
+        
+        <button id="drawer-button" class="drawer-button" aria-label="Buka menu navigasi">☰</button>
+      </div>
+    </header>
+
+    <main tabIndex="-1" id="main-content" class="main-content"></main>
+
+     <footer>
+      <div class="container">
+        <hr>
+        <div class="footer-content">
+          <div class="brand-name">
+            <span class="brand-name__text">StoryApp</span>
+          </div>
+          <p class="copyright">&copy; 2025 StoryApp</p>
+        </div>
+      </div>
+    </footer>
+
+  </body>
+</html>

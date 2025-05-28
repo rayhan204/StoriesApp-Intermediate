@@ -1,0 +1,62 @@
+form > .form-control:not([hidden]) + .form-control:not([hidden]) {
+  margin-top: 24px;
+}
+
+form .form-control > *:not([hidden]) + *:not([hidden]) {
+  margin-top: 8px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.form-help {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.input-group input {
+  padding-left: 48px;
+}
+
+form .form-buttons {
+  margin-top: 32px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+/* Gaya khusus untuk form autentikasi */
+.auth-form-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.auth-submit-btn {
+  width: 100%;
+}
+
+.auth-alternate-action {
+  text-align: center;
+  color: var(--text-muted);
+}
