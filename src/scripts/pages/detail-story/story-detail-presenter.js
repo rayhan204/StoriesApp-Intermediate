@@ -70,18 +70,18 @@ export default class StoryDetailPresenter {
     }
   }
 
-  async getCommentsList() {
-    this.#view.showCommentsLoading();
-    try {
-      const response = await this.#apiModel.getAllCommentsByStoryId(this.#storyId);
-      this.#view.populateStoryDetailComments(response.message, response.comments || []);
-    } catch (error) {
-      console.error('getCommentsList: error:', error);
-      this.#view.populateCommentsListError(error.message);
-    } finally {
-      this.#view.hideCommentsLoading();
-    }
-  }
+  // async getCommentsList() {
+  //   this.#view.showStoryDetailLoading();
+  //   try {
+  //     const response = await this.#apiModel.getAllCommentsByStoryId(this.#storyId);
+  //     this.#view.populateStoryDetailAndInitialMap(response.message, response.comments || []);
+  //   } catch (error) {
+  //     console.error('getCommentsList: error:', error);
+  //     this.#view.populateCommentsListError(error.message);
+  //   } finally {
+  //     this.#view.hideCommentsLoading();
+  //   }
+  // }
 
   async postNewComment({ body }) {
     this.#view.showSubmitLoadingButton();
@@ -103,17 +103,10 @@ export default class StoryDetailPresenter {
     }
   }
 
-  async toggleBookmark(storyData) {
-    console.log('Toggle bookmark story:', storyData);
-    alert('Bookmark feature belum tersedia');
-    
-    return false;
-  }
-
   async saveStory() {
     try {
-      const story = await this.#apiModel.getStoryById(this.#storyId);
-      await this.#dbModel.saveStory(story.data);
+      const response = await this.#apiModel.getStoryById(this.#storyId);
+      await this.#dbModel.saveStory(response.story);
 
       this.#view.saveToBookmarkSuccessfully('Success to save to bookmark');
     } catch (error) {
@@ -121,6 +114,17 @@ export default class StoryDetailPresenter {
       this.#view.saveToBookmarkFailed(error.message || 'Failed to save story to bookmark');
     }
   }
+
+  async removeStory() {
+  try {
+    await this.#dbModel.deleteStory(this.#storyId);
+    this.#view.removeFromBookmarkSuccessfully('Story successfully removed from bookmark');
+  } catch (error) {
+    console.error('removeStory: error:', error);
+    this.#view.removeFromBookmarkFailed(error.message || 'Failed to remove story from bookmark');
+  }
+}
+
 
   async showSaveButton() {
     if (await this.#isStorySaved()) {

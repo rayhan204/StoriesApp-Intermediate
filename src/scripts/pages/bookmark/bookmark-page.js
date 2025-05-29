@@ -5,92 +5,141 @@ import {
   generateStoriesListErrorTemplate,
 } from '../../templates';
 import BookmarkPresenter from './bookmark-presenter';
-import Database from '../../data/database';
 import Map from '../../utils/map';
+import Database from '../../data/database';
 
 export default class BookmarkPage {
-  #presenter = null;
-  #map = null;
+  constructor() {
+    this.presenter = null;
+    this.map = null;
+  }
 
   async render() {
     return `
-      <section>
-        <div class="reports-list__map__container">
-          <div id="map" class="reports-list__map"></div>
+      <section class="map-section" id="map-section">
+        <div class="container">
+          <h2 class="section-title">Stori tersimpan mode Offline</h2>
+          <p class="section-subtitle">Stori dari berbagai sekiatar anda</p>
+        </div>
+        <div class="stories-list__map__container">
+          <div id="map" class="stories-list__map"></div>
           <div id="map-loading-container"></div>
         </div>
       </section>
 
-      <section class="container">
-        <h1 class="section-title">Daftar Laporan Kerusakan Tersimpan</h1>
+      <section class="container stories-section" id="stories-section">
+        <h2 class="section-title">Story App</h2>
+        <p class="section-subtitle">Temukan Story kamu</p>
 
-        <div class="reports-list__container">
-          <div id="reports-list"></div>
-          <div id="reports-list-loading-container"></div>
+        <div class="stories-list__container">
+          <div id="stories-list"></div>
+          <div id="stories-list-loading-container"></div>
         </div>
       </section>
+      
+      
     `;
   }
 
   async afterRender() {
-    this.#presenter = new BookmarkPresenter({
+    this.presenter = new BookmarkPresenter({
       view: this,
-      dbModel: Database,
+      model: Database,
     });
 
-    await this.#presenter.initialGalleryAndMap();
+    await this.presenter.initialGalleryAndMap();
+
+
+    const visibleSkipButton = document.getElementById('visible-skip-button');
+    if (visibleSkipButton) {
+      visibleSkipButton.addEventListener('click', () => {
+        const storiesSection = document.getElementById('stories-section');
+        if (storiesSection) {
+          storiesSection.scrollIntoView({ behavior: 'smooth' });
+          storiesSection.focus();
+        }
+      });
+    }
   }
 
-  populateBookmarkedStories(message, stories) {
+  populateStoriesList(message, stories) {
     if (stories.length <= 0) {
-      this.populateBookmarkedStoriesListEmpty();
+      this.populateStoriesListEmpty();
       return;
     }
 
     const html = stories.reduce((accumulator, story) => {
-      if (this.#map) {
-        const coordinate = [stories.location.latitude, stories.location.longitude];
-        const markerOptions = { alt: story.title };
-        const popupOptions = { content: story.title}
-
-        this.#map.addMarker(coordinate, markerOptions, popupOptions);
+      if (!story.location && (story.lat !== undefined || story.lon !== undefined)) {
+        story.location = {
+          lat: story.lat,
+          lon: story.lon,
+        };
+      } else if (!story.location) {
+        story.location = { lat: 0, lon: 0 };
       }
 
       return accumulator.concat(
         generateStoryItemTemplate({
           ...story,
-          placeNameLocation: story.location?.placeName,
-          storyName: story.reporter.name,
+          name: story.name,
         }),
       );
     }, '');
 
-    document.getElementById('reports-list').innerHTML =`
-      <div class="reports-list">${html}</div>
-      `;
+    document.getElementById('stories-list').innerHTML = `
+      <div class="stories-list">${html}</div>
+    `;
   }
 
-  populateBookmarkedStoriesListEmpty() {
-    document.getElementById('reports-list').innerHTML = generateStoriesListEmptyTemplate();
+  populateStoriesListEmpty() {
+    document.getElementById('stories-list').innerHTML = generateStoriesListEmptyTemplate();
   }
 
-  populateBookmarkedStoriesError(message) {
-    document.getElementById('reports-list').innerHTML = generateStoriesListErrorTemplate(message);
-  }
-
-  showStoriesListLoading() {
-    document.getElementById('reports-list-loading-container').innerHTML = generateLoaderAbsoluteTemplate();
-  }
-
-  hideStoriesListLoading() {
-    document.getElementById('reports-list-loading-container').innerHTML = '';
+  populateStoriesListError(message) {
+    document.getElementById('stories-list').innerHTML = generateStoriesListErrorTemplate(message);
   }
 
   async initialMap() {
-    this.#map = await Map.build('#map', {
-      zoom: 10,
-      locate: true,
-    });
+    try {
+      this.map = await Map.build('#map', {
+        zoom: 10,
+        locate: true,
+      });
+
+      if (this.map) {
+        const response = await StoryAPI.getAllStories();
+        if (response.ok && response.listStory && response.listStory.length > 0) {
+          for (const story of response.listStory) {
+            if (story.location || (story.lat !== undefined && story.lon !== undefined)) {
+              const lat = story.location ? story.location.lat : story.lat;
+              const lon = story.location ? story.location.lon : story.lon;
+
+              if ((lat !== 0 || lon !== 0) && !isNaN(Number(lat)) && !isNaN(Number(lon))) {
+                const popupContent = `
+                  <div class="story-location-popup">
+                    <strong>${story.name}'s Story</strong>
+                    <p>${story.description.substring(0, 100)}${story.description.length > 100 ? '...' : ''}</p>
+                    <p class="story-location-coordinates">
+                      Latitude: ${lat}<br>
+                      Longitude: ${lon}
+                    </p>
+                    <a href="#/stories/${story.id}" class="popup-link">Detail</a>
+                  </div>
+                `;
+
+                this.map.addMarker(
+                  [lat, lon],
+                  { alt: `${story.name}'s story location` },
+                  { content: popupContent },
+                );
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing map:', error);
+    }
   }
 
   showMapLoading() {
@@ -99,5 +148,14 @@ export default class BookmarkPage {
 
   hideMapLoading() {
     document.getElementById('map-loading-container').innerHTML = '';
+  }
+
+  showLoading() {
+    document.getElementById('stories-list-loading-container').innerHTML =
+      generateLoaderAbsoluteTemplate();
+  }
+
+  hideLoading() {
+    document.getElementById('stories-list-loading-container').innerHTML = '';
   }
 }

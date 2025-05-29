@@ -46,7 +46,6 @@ export default class StoryDetailPage {
     });
 
     this.presenter.showStoryDetail();
-    this.presenter.getCommentsList();
   }
 
   async populateStoryDetailAndInitialMap(message, story) {
@@ -56,7 +55,6 @@ export default class StoryDetailPage {
       }
 
       const location = story.location || { lat: 0, lon: 0, placeName: 'Unknown location' };
-
       const lat = location.lat !== undefined ? location.lat : 0;
       const lon = location.lon !== undefined ? location.lon : 0;
 
@@ -64,11 +62,7 @@ export default class StoryDetailPage {
         name: story.name || 'Unknown',
         description: story.description || 'No description available',
         photoUrl: story.photoUrl,
-        location: {
-          ...location,
-          lat,
-          lon,
-        },
+        location: { ...location, lat, lon },
         createdAt: story.createdAt || new Date().toISOString(),
       });
 
@@ -147,13 +141,16 @@ export default class StoryDetailPage {
       saveContainer.innerHTML = generateSaveStoryButtonTemplate();
 
       document.getElementById('story-detail-save')?.addEventListener('click', async () => {
-        await this.presenter.saveStory();
+        const response = await this.presenter.saveStory();
+        if (!response) {
+          alert('Story tersimpan di offline!');
+        }
       });
     }
   }
 
   saveToBookmarkSuccessfully(message) {
-    console.log(message)
+    console.log(message);
   }
 
   saveToBookmarkFailed(message) {
@@ -166,9 +163,9 @@ export default class StoryDetailPage {
       saveContainer.innerHTML = generateRemoveStoryButtonTemplate();
 
       document.getElementById('story-detail-remove')?.addEventListener('click', async () => {
-        const response = await this.presenter.toggleBookmark();
+        const response = await this.presenter.removeStory();
         if (!response) {
-          alert('Story removed from bookmarks!');
+          alert('Story dihapus dari database!');
         }
       });
     }
@@ -208,16 +205,48 @@ export default class StoryDetailPage {
   }
 
   showMapLoading() {
-    const mapLoadingContainer = document.getElementById('map-loading-container');
-    if (mapLoadingContainer) {
-      mapLoadingContainer.innerHTML = generateLoaderAbsoluteTemplate();
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+      mapElement.innerHTML = generateLoaderAbsoluteTemplate();
     }
   }
 
   hideMapLoading() {
-    const mapLoadingContainer = document.getElementById('map-loading-container');
-    if (mapLoadingContainer) {
-      mapLoadingContainer.innerHTML = '';
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+      mapElement.innerHTML = '';
     }
+  }
+
+  showSubmitLoadingButton() {
+    const button = document.getElementById('comment-submit-button');
+    if (button) {
+      button.innerHTML = '<span class="spinner"></span> Posting...';
+      button.disabled = true;
+    }
+  }
+
+  hideSubmitLoadingButton() {
+    const button = document.getElementById('comment-submit-button');
+    if (button) {
+      button.innerHTML = 'Post Comment';
+      button.disabled = false;
+    }
+  }
+
+  postNewCommentSuccessfully(message, comment) {
+    console.log(message, comment);
+  }
+
+  postNewCommentFailed(message) {
+    alert(message);
+  }
+
+  removeFromBookmarkSuccessfully(message) {
+    console.log(message);
+  }
+
+  removeFromBookmarkFailed(message) {
+    alert(message);
   }
 }
