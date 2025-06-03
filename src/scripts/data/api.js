@@ -4,6 +4,8 @@ import { BASE_URL } from '../config';
 const ENDPOINTS = {
   REGISTER: `${BASE_URL}/register`,
   LOGIN: `${BASE_URL}/login`,
+  SUBSCRIBE: `${BASE_URL}/notifications/subscribe`,
+  UNSUBSCRIBE: `${BASE_URL}/notifications/subscribe`,
   MY_USER_INFO: `${BASE_URL}/users/me`,
   STORIES_LIST: `${BASE_URL}/stories`,
   STORY_DETAIL: (id) => `${BASE_URL}/stories/${id}`,
@@ -166,6 +168,49 @@ export async function storeNewCommentByStoryId(storyId, { body }) {
 
   const fetchResponse = await fetch(ENDPOINTS.STORE_NEW_STORY_COMMENT(storyId), {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: data,
+  });
+  const json = await fetchResponse.json();
+
+  return {
+    ...json,
+    ok: fetchResponse.ok,
+  };
+}
+
+export async function subscribePushNotification({ endpoint, keys: { p256dh, auth } }) {
+  const accessToken = getAccessToken();
+  const data = JSON.stringify({
+    endpoint,
+    keys: { p256dh, auth },
+  });
+
+  const fetchResponse = await fetch(ENDPOINTS.SUBSCRIBE, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: data,
+  });
+  const json = await fetchResponse.json();
+
+  return {
+    ...json,
+    ok: fetchResponse.ok,
+  };
+}
+
+export async function unsubscribePushNotification({ endpoint }) {
+  const accessToken = getAccessToken();
+  const data = JSON.stringify({ endpoint });
+
+  const fetchResponse = await fetch(ENDPOINTS.UNSUBSCRIBE, {
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${accessToken}`,
