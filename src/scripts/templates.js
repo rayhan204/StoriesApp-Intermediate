@@ -14,7 +14,7 @@ export function generateLoaderAbsoluteTemplate() {
 
 export function generateMainNavigationListTemplate() {
   return `
-    <li><a id="story-list-button" class="nav-link" href="#/home" aria-label="Stories List">
+    <li><a id="story-list-button" class="nav-link" href="#/" aria-label="Stories List">
       <i class="fas fa-home"></i> Home
     </a></li>
     <li><a id="bookmark-button" class="nav-link" href="#/bookmark" aria-label="Bookmarked Stories">
@@ -25,6 +25,7 @@ export function generateMainNavigationListTemplate() {
 
 export function generateUnauthenticatedNavigationListTemplate() {
   return `
+    <li id="push-notification-tools" class="push-notification-tools"></li>
     <li><a id="login-button" class="nav-link auth-link" href="#/login" aria-label="Login">
       <i class="fas fa-sign-in-alt"></i> Login
     </a></li>
@@ -36,6 +37,7 @@ export function generateUnauthenticatedNavigationListTemplate() {
 
 export function generateAuthenticatedNavigationListTemplate() {
   return `
+    <li id="push-notification-tools" class="push-notification-tools"></li>
     <li><a id="new-story-button" class="btn new-story-button" href="#/new" aria-label="Create New Story">
       <i class="fas fa-plus"></i> Share Story
     </a></li>
@@ -220,3 +222,20 @@ export function generateRemoveStoryButtonTemplate() {
     </button>
   `;
 }
+
+export function generateSubscribeButtonTemplate() {
+  return `
+    <button id="subscribe-button" class="btn subscribe-button">
+      Subscribe <i class="fas fa-bell"></i>
+    </button>
+  `;
+}
+
+export function generateUnsubscribeButtonTemplate() {
+  return `
+    <button id="unsubscribe-button" class="btn unsubscribe-button">
+      Unsubscribe <i class="fas fa-bell-slash"></i>
+    </button>
+  `;
+}
+
