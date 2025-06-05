@@ -1,2 +1,2 @@
-APP_URL= https://extraordinary-flan-0b056c.netlify.app
+APP_URL= https://astonishing-tanuki-d46f0e.netlify.app/
 MAP_SERVICE_API_KEY=<api_key>

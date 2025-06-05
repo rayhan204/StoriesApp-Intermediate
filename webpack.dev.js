@@ -8,20 +8,25 @@ module.exports = merge(common, {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-        ],
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },
   devServer: {
     static: path.resolve(__dirname, 'dist'),
     port: 9000,
+    hot: false,
+    liveReload: false,
     client: {
       overlay: {
         errors: true,
         warnings: true,
+      },
+    },
+    watchFiles: {
+      paths: ['src/**/*'],
+      options: {
+        ignored: ['dist/**'],
       },
     },
   },
